@@ -12,7 +12,6 @@ router.get('/', function(req,res){
     res.sendFile(path.join(__dirname,"../public/main.html"))
 });
 
-
 router.use('/main', main)
 router.use('/email', email)
 router.use('/join', join)
