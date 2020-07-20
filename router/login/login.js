@@ -20,7 +20,7 @@ router.get('/', function(req, res){
     var msg;
     var errMsg = req.flash('error');
     if(errMsg) msg = errMsg;
-    res.render('join.ejs', {'message' : msg});
+    res.render('login.ejs', {'message' : msg});
 });
 
 // passport.serializeUser
@@ -38,7 +38,7 @@ passport.deserializeUser(function(id, done) {
 
 });
 
-passport.use('local-join', new LocalStrategy({
+passport.use('local-login', new LocalStrategy({
         usernameField : 'email',
         passwordField : 'password',
         passReqToCallback : true
@@ -47,24 +47,35 @@ passport.use('local-join', new LocalStrategy({
         if(err) return done(err);
 
         if(rows.length){
-            console.log('user existed')
-            return done(null, false, {message : 'Your email is already used'})
+            console.log('user existed');
+            return done(null,{'email' : email, 'id' : rows[0].id});
         } else{
-            var sql = {'email' : email, 'pw' : password};
-            var query = connection.query('Insert into users set ?', sql, function(err, rows){
-                if(err) throw err;
-                return done(null, {'email' : email, 'id' : rows.insertId});
-            })
+            return done(null, false, {'message' : 'your login info is not found !'});
         }
     })
   }
 ));
+//Base post
+// router.post('/', passport.authenticate('local-join', {
+//     successRedirect: '/main',
+//     failureRedirect: '/join',
+//     failureFlash : true })
+// );
 
-router.post('/', passport.authenticate('local-join', {
-    successRedirect: '/main',
-    failureRedirect: '/join',
-    failureFlash : true })
-);
+//Custom CallBack
+router.post('/', function(req,res,next){
+    passport.authenticate('local-login', function(err, user, info){
+        if(err) res.status(500).json(err);
+        if(!user){
+            return res.status(401).json(info.message)
+        };
+
+        req.logIn(user, function(err) {
+            if (err) { return next(err); }
+            return res.json(user);
+          });
+    })(req, res, next);
+})
 
 // router.post('/', function(req, res){
 //     var body = req.body;
