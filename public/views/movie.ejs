@@ -48,7 +48,7 @@
             </li>
 
             <li class="update_id">
-                <form action="" method="post">
+                <form action="" method="put">
                    <div> 제목 : <input type="text" name="title" placeholder="Terminator"> </div>
                    <div> 장르 : <input type="text" name="type"  placeholder="drama"> </div>
                    <div> 평점 : <input type="text" name="grade" placeholder="8.43"> </div>
@@ -94,6 +94,7 @@
                     url = "/movie";
                     method = "POST";
                     let inputs = [].slice.call(document.querySelector("form").elements);
+                    console.log(inputs);
                     data = inputs.reduce(function(pre,next) {
                         pre[next.name] = next.value;
                         return pre;
@@ -124,6 +125,17 @@
                             showResult.innerText = "해당영화가 없습니다";
                         }
                     }
+                    break;
+                case "update_id":
+                    url = "/movie/"+li.getElementsByTagName("input")[0].value;
+                    method = "PUT";
+                    console.log(document.querySelector("form").elements);
+                    let puts = [].slice.call(document.querySelector("form").elements);
+                    console.log(puts);
+                    data = puts.reduce(function(pre,next) {
+                        pre[next.name] = next.value;
+                        return pre;
+                    }, {});
                     break;
                 default:
                     // statements_def

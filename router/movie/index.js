@@ -74,7 +74,7 @@ router.get('/:title', function(req,res){
         res.json(responseData)
     });
 })
-
+// 4. /movie/:title, DELETE
 router.delete('/:title', function(req, res){
     var title = req.params.title;
     var responseData = {};
@@ -93,7 +93,34 @@ router.delete('/:title', function(req, res){
         res.json(responseData)
     });
 })
+// 5. /movie, UPDATE
+router.put('/:title', function(req,res){
+    console.log('update server');
+    
+    var title = req.body.title;
+    var type = req.body.type;
+    var grade = req.body.grade;
+    var actor = req.body.actor;
 
+    var query = connection.query('select * from movie from where title=?', [title] , function(err, rows){
+        if(err) return done(err);
+        console.log(rows);
+
+        if(rows.length){
+            var sql = {type, grade, actor,title};
+            var query = connection.query('update into movie set ? from ?', sql, function(err, rows){
+                if(err) throw err;
+                return res.json({'result' : 0});
+            })
+        } else{
+            console.log('movie not existed')
+            return res.json({'result' : 0});
+        }
+    })
+    
+})
+
+// 6. /movie
 
 
 module.exports = router;
